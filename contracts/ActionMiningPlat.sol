@@ -64,7 +64,7 @@ contract ActionMiningPlat is Random, AccessService {
 
     function withdrawPlat() external {
         require(msg.sender == addrFinance || msg.sender == addrAdmin);
-        uint256 balance = bitGuildContract.balanceOf(msg.sender);
+        uint256 balance = bitGuildContract.balanceOf(this);
         require(balance > 0);
         bitGuildContract.transfer(addrFinance, balance);
     }
@@ -228,43 +228,43 @@ contract ActionMiningPlat is Random, AccessService {
         if (_extraData[0] >= 48 && _extraData[0] <= 57) {
             val = val + uint32(_extraData[0]) - 48;
         }
-        if (_extraData[1] >= 48 && _extraData[1] <= 57) {
-            val = val + (uint32(_extraData[1]) - 48) * 10;
+        if (_extraData.length > 1) {
+            if (_extraData[1] >= 48 && _extraData[1] <= 57) {
+                val = val + (uint32(_extraData[1]) - 48) * 10;
+            }
         }
         return val;    
     }
 
-    event DebugLog(bytes data, uint256 length);
     function receiveApproval(address _sender, uint256 _value, address _tokenContract, bytes _extraData) 
         external 
         whenNotPaused 
     {
-        //require(msg.sender == address(bitGuildContract));
-        //require(_extraData.length == 2 || _extraData.length == 1);
-        DebugLog(_extraData, _extraData.length);
+        require(msg.sender == address(bitGuildContract));
+        require(_extraData.length == 2 || _extraData.length == 1);
         uint32 miningType = _getExtraParam(_extraData);
         if (miningType == 0) {
-            //require(_value == miningOnePlat);
+            require(_value == miningOnePlat);
             require(bitGuildContract.transferFrom(_sender, address(this), _value));
             _miningOneSelf(_sender, _value);
         } else if (miningType == 10) {
-            //require(_value == miningTenPlat);
+            require(_value == miningTenPlat);
             require(bitGuildContract.transferFrom(_sender, address(this), _value));
             _addOrder(_sender, 10);
         } else if (miningType == 3) {
-            //require(_value == miningThreePlat);
+            require(_value == miningThreePlat);
             require(bitGuildContract.transferFrom(_sender, address(this), _value));
             _addOrder(_sender, 3);
         } else if (miningType == 5) {
-            //require(_value == miningFivePlat);
+            require(_value == miningFivePlat);
             require(bitGuildContract.transferFrom(_sender, address(this), _value));
             _addOrder(_sender, 5);
         } else if (miningType == 1) {
-            //require(_value == miningOnePlat);
+            require(_value == miningOnePlat);
             require(bitGuildContract.transferFrom(_sender, address(this), _value));
             _addOrder(_sender, 1);
         } else {
-            //require(false);
+            require(false);
         }
         _transferHelper(_value);
     }
