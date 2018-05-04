@@ -59,7 +59,7 @@ contract ActionMiningPlat is Random, AccessService {
     }
 
     function getPlatBalance() external view returns(uint256) {
-        return bitGuildContract.balanceOf(msg.sender);
+        return bitGuildContract.balanceOf(this);
     }
 
     function withdrawPlat() external {
